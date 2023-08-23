@@ -12,8 +12,8 @@ fi
 
 emcc src/ft.cpp \
     "$EMSDK/upstream/emscripten/cache/sysroot/lib/libfreetype.a" \
-    "$EMSDK/upstream/emscripten/cache/sysroot/lib/libbrotlidec-static.a" \
-    "$EMSDK/upstream/emscripten/cache/sysroot/lib/libbrotlicommon-static.a" \
+    "$EMSDK/upstream/emscripten/cache/sysroot/lib/libbrotlidec.a" \
+    "$EMSDK/upstream/emscripten/cache/sysroot/lib/libbrotlicommon.a" \
     -iwithsysroot/include/freetype2 \
     -O3 \
     -lembind \

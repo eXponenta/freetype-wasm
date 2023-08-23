@@ -245,7 +245,7 @@ emscripten::val SetCharmapByIndex(int index)
 
 // https://freetype.org/freetype2/docs/reference/ft2-base_interface.html#ft_load_xxx
 
-emscripten::val LoadGlyphsFromCharmap(FT_ULong first_charcode, FT_ULong last_charcode, FT_Int32 load_flags)
+emscripten::val LoadGlyphsFromCharmap(FT_ULong first_charcode, FT_ULong last_charcode, FT_Int32 load_flags, int use_sdf)
 {
     emscripten::val mappe = emscripten::val::global("Map").new_();
 
@@ -265,6 +265,11 @@ emscripten::val LoadGlyphsFromCharmap(FT_ULong first_charcode, FT_ULong last_cha
     else
     {
         charcode = FT_Get_First_Char(current_face, &gindex);
+    }
+
+
+    if (use_sdf > 0) {
+        load_flags |= FT_LOAD_TARGET_(FT_RENDER_MODE_SDF);
     }
 
     while (gindex != 0)
@@ -290,7 +295,7 @@ emscripten::val LoadGlyphsFromCharmap(FT_ULong first_charcode, FT_ULong last_cha
     return mappe;
 }
 
-emscripten::val LoadGlyphs(std::vector<FT_ULong> charcodes, FT_Int32 load_flags)
+emscripten::val LoadGlyphs(std::vector<FT_ULong> charcodes, FT_Int32 load_flags, int use_sdf)
 {
     emscripten::val mappe = emscripten::val::global("Map").new_();
 
@@ -299,6 +304,11 @@ emscripten::val LoadGlyphs(std::vector<FT_ULong> charcodes, FT_Int32 load_flags)
         fprintf(stderr, "FreeType: Current font is not set.\n");
         return mappe;
     }
+
+    if (use_sdf) {
+        load_flags |= FT_LOAD_TARGET_(FT_RENDER_MODE_SDF);
+    }
+
     for (auto &c : charcodes)
     {
         FT_Error error = FT_Load_Char(current_face, c, load_flags);
@@ -307,6 +317,7 @@ emscripten::val LoadGlyphs(std::vector<FT_ULong> charcodes, FT_Int32 load_flags)
             fprintf(stderr, "Can't load char '%lu'\n", c);
             continue;
         }
+
         mappe.call<void>("set", emscripten::val(c), emscripten::val(*current_face->glyph));
     }
 
@@ -389,6 +400,10 @@ emscripten::val AvailableSizes_Getter(const FT_FaceRec &v)
     return emscripten::val(vec);
 }
 
+unsigned char* RawData_Getter(const FT_Bitmap &v) {
+    return v.buffer;
+}
+
 emscripten::val ImageData_Getter(const FT_Bitmap &v)
 {
     // Convert to RGBA
@@ -406,7 +421,7 @@ emscripten::val ImageData_Getter(const FT_Bitmap &v)
     }
 
     std::vector<unsigned char> rgba(pixels * 4);
-    if (v.pixel_mode == FT_PIXEL_MODE_GRAY && v.num_grays == 256)
+    if (v.pixel_mode == FT_PIXEL_MODE_GRAY && v.num_grays >= 255)
     {
         for (size_t i = 0; i < bufsize; i++)
         {
