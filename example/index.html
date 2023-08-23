@@ -2,13 +2,38 @@
 <html>
     <head>
         <style>
-            html,
+            html {
+                margin: 0px;
+                width: 100%;
+                height: 100%;
+                overflow: hidden;
+            }
             body {
-                margin: 0;
+                padding: 10px;
+                display: flex;
+                height: 100%;
+                flex-direction: column;
+            }
+
+            canvas {
+                width: 100%;
+                height: 100%;
             }
         </style>
     </head>
-    <p>This example requires web server</p>
+    <textarea type="text" rows="5" id="input" style="display: block;">Test text</textarea>
+    <label>
+        Size:
+        <input type="number" id="size" value="32" />
+    </label>
+    <label>
+        Use SDF
+        <input type="checkbox" id="sdf" />
+    </label>
+    <button id="render">Render</button>
+    <div>
+        Render time: <span id="render-time">0ms</span>
+    </div>
     <canvas
         width="640"
         height="480"
