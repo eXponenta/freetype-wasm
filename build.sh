@@ -15,7 +15,7 @@ emcc src/ft.cpp \
     "$EMSDK/upstream/emscripten/cache/sysroot/lib/libbrotlidec.a" \
     "$EMSDK/upstream/emscripten/cache/sysroot/lib/libbrotlicommon.a" \
     -iwithsysroot/include/freetype2 \
-    -O3 \
+    -O3 -msimd128 \
     -lembind \
     -s EXPORT_ES6=1 \
     -s MODULARIZE=1 \
