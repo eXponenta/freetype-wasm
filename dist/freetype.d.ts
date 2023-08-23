@@ -25,13 +25,15 @@ interface FreetypeModule {
 
   LoadGlyphs: (
     charcodes: number[],
-    load_flags: number
+    load_flags: number,
+    use_sdf: boolean,
   ) => Map<number, FT_GlyphSlotRec>;
 
   LoadGlyphsFromCharmap: (
     first_charcode: number,
     last_charcode: number,
-    load_flags: number
+    load_flags: number,
+    use_sdf: boolean
   ) => Map<number, FT_GlyphSlotRec>;
 
   GetKerning: (
